@@ -12,20 +12,10 @@ const Controls = ({
   const btnNextClass = disabledNext ? s.disabled : s.button;
   return (
     <section className={s.controls}>
-      <button
-        type="button"
-        disabled={disabledPrev}
-        onClick={handlePrevPub}
-        className={btnPrevClass}
-      >
+      <button type="button" onClick={handlePrevPub} className={btnPrevClass}>
         Назад
       </button>
-      <button
-        type="button"
-        disabled={disabledNext}
-        onClick={handleNextPub}
-        className={btnNextClass}
-      >
+      <button type="button" onClick={handleNextPub} className={btnNextClass}>
         Вперед
       </button>
     </section>

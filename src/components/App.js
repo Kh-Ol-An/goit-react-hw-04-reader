@@ -1,9 +1,14 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import Reader from './Reader/Reader';
 
 function App() {
-  return <Route component={Reader} />;
+  return (
+    <Switch>
+      <Route path="/reader" component={Reader} />
+      <Redirect to="/reader" />
+    </Switch>
+  );
 }
 
 export default App;

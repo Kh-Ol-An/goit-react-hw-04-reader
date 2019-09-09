@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import Publication from '../Publication/Publication';
 import Counter from '../Counter/Counter';
 import Controls from '../Controls/Controls';
@@ -18,43 +18,43 @@ const INITIAL_STATE = {
 const getItemFromLocation = location => queryString.parse(location.search).item;
 
 export default class Reader extends Component {
+  static propTypes = {
+    history: PropTypes.shape().isRequired,
+    location: PropTypes.shape().isRequired,
+  };
+
   state = { ...INITIAL_STATE };
 
-  componentDidMount() {
-    const { history, location } = this.props;
-    const searchItem = getItemFromLocation(location);
-    if (+searchItem === 1) {
+  async componentDidMount() {
+    const { history, location } = await this.props;
+    const searchItem = await getItemFromLocation(location);
+    if (+searchItem) {
       this.setState({
         publication: publications[+searchItem - 1],
         currentValue: +searchItem,
+      });
+    }
+    if (+searchItem === 1) {
+      this.setState({
         disabledPrev: true,
         disabledNext: false,
       });
     } else if (+searchItem === publications.length) {
       this.setState({
-        publication: publications[+searchItem - 1],
-        currentValue: +searchItem,
         disabledPrev: false,
         disabledNext: true,
       });
-    } else {
+    } else if (+searchItem > 1 && +searchItem < publications.length) {
       this.setState({
-        publication: publications[+searchItem - 1],
-        currentValue: +searchItem,
         disabledPrev: false,
         disabledNext: false,
       });
     }
-    // const { currentValue } = this.state;
-    // console.log('this.props', this.props);
-    // console.log('currentValue', currentValue);
-    setTimeout(() => {
-      history.push({
-        ...location,
-        pathname: '/reader',
-        search: `item=${this.state.currentValue}`,
-      });
-    }, 1000);
+    const { currentValue } = await this.state;
+    await history.push({
+      ...location,
+      search: `item=${currentValue}`,
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -62,7 +62,7 @@ export default class Reader extends Component {
     const { history, location } = this.props;
     const prevPropItem = getItemFromLocation(prevProps.location);
     if (+prevPropItem !== currentValue) {
-      history.replace({
+      history.push({
         ...location,
         search: `item=${currentValue}`,
       });
@@ -91,10 +91,6 @@ export default class Reader extends Component {
     }));
   };
 
-  // reset = () => {
-  //   this.setState({ ...INITIAL_STATE });
-  // };
-
   render() {
     const {
       publication,
@@ -103,7 +99,6 @@ export default class Reader extends Component {
       disabledPrev,
       disabledNext,
     } = this.state;
-    // console.log('this.props', this.props);
     return (
       <div className={s.containerReader}>
         <Publication publication={publication} />
